@@ -1,0 +1,38 @@
+USE TaxiAnalytics;
+
+SELECT COUNT(*) AS Total_Rows
+FROM dbo.Bookings_Cleaned;
+
+SELECT COUNT(DISTINCT Booking_ID) AS Unique_Booking_IDs
+FROM dbo.Bookings_Cleaned;
+
+SELECT COUNT(*) AS Duplicate_Booking_IDs
+FROM (
+    SELECT Booking_ID
+    FROM dbo.Bookings_Cleaned
+    GROUP BY Booking_ID
+    HAVING COUNT(*) > 1
+) AS Duplicates;
+
+SELECT
+    MIN(DateTime) AS Minimum_Date,
+    MAX(DateTime) AS Maximum_Date
+FROM dbo.Bookings_Cleaned;
+
+SELECT
+    Booking_Status,
+    COUNT(*) AS Booking_Count,
+    CAST(
+        COUNT(*) * 100.0 / SUM(COUNT(*)) OVER()
+        AS DECIMAL(10,2)
+    ) AS Percentage
+FROM dbo.Bookings_Cleaned
+GROUP BY Booking_Status
+ORDER BY Booking_Count DESC;
+
+SELECT
+    COUNT(*) AS Total_Bookings,
+    SUM(Booking_Value) AS Total_Booking_Value,
+    AVG(CAST(Booking_Value AS DECIMAL(10,2))) AS Average_Booking_Value,
+    AVG(CAST(Ride_Distance AS DECIMAL(10,2))) AS Average_Ride_Distance
+FROM dbo.Bookings_Cleaned;
